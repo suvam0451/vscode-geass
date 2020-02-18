@@ -1,0 +1,21 @@
+{
+	"name": "@suvam0451/codescribe-vscode",
+	"version": "0.0.1",
+	"description": "High level abstraction for contextual code generation in vscode. Extended support for c-family languages. ",
+	"main": "index.js",
+	"repository": "https://github.com/suvam0451/codescribe-vscode",
+	"author": "Debashish Patra <suvam0451@outlook.com>",
+	"license": "MIT",
+	"scripts": {
+		"build": "tsc -p ."
+	},
+	"devDependencies": {
+		"typescript": "^3.7.5"
+	},
+	"dependencies": {
+		"vscode": "^1.1.36"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/"
+	}
+}
