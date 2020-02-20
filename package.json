@@ -1,6 +1,6 @@
 {
 	"name": "@suvam0451/vscode-geass",
-	"version": "0.0.14",
+	"version": "0.0.15",
 	"description": "High level abstraction for contextual code generation in vscode. Extended support for c-family languages. ",
 	"main": "./lib/index.js",
 	"repository": "https://github.com/suvam0451/vscode-geass",
