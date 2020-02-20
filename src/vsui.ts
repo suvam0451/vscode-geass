@@ -1,7 +1,27 @@
 import vscode from "vscode";
 
+/** FUNCTION LIST (sync/async available for most of them. Defaults to async API)
+ * 		GetAFolder 								--> 	get folder
+ * 		GetString								-->		get string input. optionally regex match
+ */
+
 /** namespace for working with VSCode UI */
 export namespace vsui {
+	/** Simple info message. No callbacks. */
+	export function Info(msg: string) {
+		vscode.window.showInformationMessage(msg);
+	}
+
+	/** Simple info message. No callbacks. */
+	export function Error(msg: string) {
+		vscode.window.showErrorMessage(msg);
+	}
+
+	/** Simple info message. No callbacks. */
+	export function Warning(msg: string) {
+		vscode.window.showWarningMessage(msg);
+	}
+
 	/** Request user for a folder
 	 * 	@returns first folder selected if success
 	 * 	@returns reject("USER ABORT") if failure
@@ -95,4 +115,39 @@ export namespace vsui {
 		);
 		return "";
 	}
+
+	/** Shows input box to user and recieves string input */
+	export async function InputBox(): Promise<string> {
+		return new Promise<string>((resolve, reject) => {
+			const input = vscode.window.showInputBox(); // request classname as string
+			input.then(
+				value => {
+					typeof value !== "undefined" ? resolve(value) : reject("UNDEF");
+				},
+				() => {
+					resolve("USER_ABORT");
+				}
+			);
+		});
+	}
+
+	/** Request a single folder */
+	export async function PickFolder(): Promise<string> {
+		let opt: vscode.OpenDialogOptions = {};
+		opt.canSelectFiles = false;
+		opt.canSelectFolders = true;
+
+		return new Promise<string>((resolve, reject) => {
+			vscode.window.showOpenDialog(opt).then(
+				success => {
+					resolve(success![0].fsPath);
+				},
+				() => {
+					reject("SELECTION_EMPTY");
+				}
+			);
+		});
+	}
+
+	/** Show quick pick using fields gathered from a json array */
 }

@@ -1,4 +1,15 @@
+/** FUNCTION LIST (sync/async available for most of them. Defaults to async API)
+ * 		GetAFolder 								--> 	get folder
+ * 		GetString								-->		get string input. optionally regex match
+ */
+/** namespace for working with VSCode UI */
 export declare namespace vsui {
+    /** Simple info message. No callbacks. */
+    function Info(msg: string): void;
+    /** Simple info message. No callbacks. */
+    function Error(msg: string): void;
+    /** Simple info message. No callbacks. */
+    function Warning(msg: string): void;
     /** Request user for a folder
      * 	@returns first folder selected if success
      * 	@returns reject("USER ABORT") if failure
@@ -22,5 +33,9 @@ export declare namespace vsui {
      * 	@returns "" if failure(any)
      */
     function GetStringSync(match?: RegExp): string;
+    /** Shows input box to user and recieves string input */
+    function InputBox(): Promise<string>;
+    /** Request a single folder */
+    function PickFolder(): Promise<string>;
 }
 //# sourceMappingURL=vsui.d.ts.map
