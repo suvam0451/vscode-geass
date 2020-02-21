@@ -169,20 +169,40 @@ export namespace vsed {
 		return [startat, endat];
 	}
 
+	export function DeleteLineAtCursor() {
+		let editor = vscode.window.activeTextEditor;
+		const position = editor?.selection.active!;
+		// let rng : vscode.Range = {
+		// start : editor?.document.lineAt()
+		// }
+		// editor?.edit(editBuilder => {
+		// editBuilder.replace(vscode.Range(position), line + "\n");
+		// });
+	}
+
 	/** Silently writes at line. Effectively adds lines ABOVE
 	 * the line without shifting user's cursor.
 	 * @param line Line number
-	 * @param lines array of strings */
-	export function WriteAtLine_Silent(line: number, lines: string[]) {
+	 * @param lines array of strings
+	 * @param replaceLine whether to replace that line */
+	export function WriteAtLine_Silent(
+		line: number,
+		lines: string[],
+		replaceLine?: boolean
+	) {
 		let prevpos = MoveCursorTo(line, PositionInLine.start);
 		let newline = prevpos.line;
 		let newchar = prevpos.character;
 		if (line < prevpos.line) {
 			newline += lines.length; // If adding above current line, add number of lines.
 		}
+		if (replaceLine !== undefined && replaceLine === true) {
+			DeleteLineAtCursor();
+		}
 		WriteAtCursor(lines);
 		MoveCursorTo(newline, PositionInLine.neither, newchar); // back to original
 	}
+
 	/** Regex checks the currently active file.
 	 * 	Used to differentiate (.cpp/.h,.code-workspace) files etc.
 	 */
@@ -195,11 +215,7 @@ export namespace vsed {
 	 * @param prevPos previous location of cursor (optional)
 	 * @param autoShift if true, will automatically shift cursor totransformed location.
 	 * @returns new transformed location, if prevPos was provided. */
-	export function WriteAtCursor(
-		lines: string[],
-		prevPos?: vscode.Position,
-		autoShift?: boolean
-	) {
+	export function WriteAtCursor(lines: string[], autoShift?: boolean) {
 		let editor = vscode.window.activeTextEditor;
 		const position = editor?.selection.active!;
 		editor?.edit(editBuilder => {
