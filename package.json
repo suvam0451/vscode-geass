@@ -1,6 +1,6 @@
 {
 	"name": "@suvam0451/vscode-geass",
-	"version": "0.0.19",
+	"version": "0.0.20",
 	"description": "High level abstraction for contextual code generation in vscode. Extended support for c-family languages. ",
 	"main": "./lib/index.js",
 	"repository": "https://github.com/suvam0451/vscode-geass",
@@ -14,7 +14,10 @@
 		"@types/vscode": "^1.42.0",
 		"typescript": "^3.7.5"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"@types/react-navigation": "^3.4.0",
+		"react-navigation": "^4.2.1"
+	},
 	"publishConfig": {
 		"registry": "https://npm.pkg.github.com/"
 	}
