@@ -1,6 +1,9 @@
-import vscode from "vscode";
 import * as fs from "fs";
 import readline from "readline";
+
+/** -------------- FUNCTION LIST for vsfs module --------------------------
+ * 		RegexMatchLine				---		Use a regex pattern and look match for the first line. Only async version available.
+ */
 
 /** namespace for working with unopened files using filestreams. */
 export namespace vsfs {

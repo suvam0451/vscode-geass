@@ -1,19 +1,14 @@
 import vscode from "vscode";
 
-/** FUNCTION LIST (sync/async available for most of them. Defaults to async API)
- * 		GetAFolder 								--> 	get folder
- * 		MatchRegexInFile						-->		match file with regex. start to end.
- */
-
-/** -------------- FUNCTION LIST --------------------------
- * 		InsertAt				---		Insert a single string at given line(optionally specify tabstops)
- *		MoveCursorTo			---		Positions cursor at line. Used to add line(s) before/after that line
- *		MatchRegexInFile		---		Scans line from start to end for regex match
- *		MatchRegexInFileSync 	---		Scans line from start to end for regex match
- *		MatchRegexInFile_Bounds	---		Scans active file with regex, returns first and last found indices
- *		RegexTestActiveFile		---		Regex checks the currently active file.
- *		WriteAtLine_Silent		---		Silently writes at line. Effectively adds lines ABOVE
- *		WriteAtCursor			---		Writes lines at cursor position. Inserts newlines.
+/** -------------- FUNCTION LIST for vsed module --------------------------
+ * 		InsertAt					---		Insert a single string at given line(optionally specify tabstops)
+ *		MoveCursorTo				---		Positions cursor at line. Used to add line(s) before/after that line
+ *		MatchRegexInFile			---		Scans line from start to end for regex match
+ *		MatchRegexInFileSync 		---		Scans line from start to end for regex match
+ *		MatchRegexInFile_Bounds		---		Scans active file with regex, returns first and last found indices
+ *		RegexTestActiveFile			---		Regex checks the currently active file.
+ *		WriteAtLine_Silent			---		Silently writes at line. Effectively adds lines ABOVE
+ *		WriteAtCursor				---		Writes lines at cursor position. Inserts newlines.
  */
 
 /** namespace to work with the currently focused file. Checking if any file has focus is on you. */

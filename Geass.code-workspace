@@ -14,7 +14,7 @@
 			"**/.DS_Store": true,
 			".npmrc": true,
 			".npmignore": true,
-			"**.md": true,
+			"**.md": false,
 			"yarn.lock": true,
 			"yarn-error.log": true,
 			"LICENSE": true,
