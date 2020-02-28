@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"name": "Geass",
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			".npmrc": true,
+			".npmignore": true,
+			"**.md": true,
+			"yarn.lock": true,
+			"yarn-error.log": true,
+			"LICENSE": true,
+			"node_modules": true,
+			"lib": true
+		}
+	}
+}

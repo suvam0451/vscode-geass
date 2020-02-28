@@ -5,6 +5,17 @@ import vscode from "vscode";
  * 		MatchRegexInFile						-->		match file with regex. start to end.
  */
 
+/** -------------- FUNCTION LIST --------------------------
+ * 		InsertAt				---		Insert a single string at given line(optionally specify tabstops)
+ *		MoveCursorTo			---		Positions cursor at line. Used to add line(s) before/after that line
+ *		MatchRegexInFile		---		Scans line from start to end for regex match
+ *		MatchRegexInFileSync 	---		Scans line from start to end for regex match
+ *		MatchRegexInFile_Bounds	---		Scans active file with regex, returns first and last found indices
+ *		RegexTestActiveFile		---		Regex checks the currently active file.
+ *		WriteAtLine_Silent		---		Silently writes at line. Effectively adds lines ABOVE
+ *		WriteAtCursor			---		Writes lines at cursor position. Inserts newlines.
+ */
+
 /** namespace to work with the currently focused file. Checking if any file has focus is on you. */
 export namespace vsed {
 	/** Insert a single string at given line(optionally specify tabstops)
@@ -13,12 +24,7 @@ export namespace vsed {
 	 * @param tabs Number of tabs to append. Default: Considers number of tabs in second parameter
 	 * @param debug Whether to show info message. Defaut: false
 	 */
-	export function InsertAt(
-		line: string,
-		at: number,
-		tabs?: number,
-		debug?: boolean
-	) {
+	export function InsertAt(line: string, at: number, tabs?: number, debug?: boolean) {
 		at = at ? at : 0;
 		debug = debug ? debug : false;
 		let editor = vscode.window.activeTextEditor;
@@ -35,19 +41,16 @@ export namespace vsed {
 				},
 				err => {
 					if (debug === true) {
-						vscode.window.showInformationMessage(
-							"failed to write to editor : ",
-							err
-						);
+						vscode.window.showInformationMessage("failed to write to editor : ", err);
 					}
-				}
+				},
 			);
 	}
 
 	export enum PositionInLine {
 		start,
 		end,
-		neither
+		neither,
 	}
 
 	/**	Positions cursor at line. Used to add line(s) before/after that line
@@ -63,7 +66,7 @@ export namespace vsed {
 	export function MoveCursorTo(
 		at: number,
 		linepos: PositionInLine,
-		charloc?: number
+		charloc?: number,
 	): vscode.Position {
 		const editor = vscode.window.activeTextEditor!;
 		const position = editor?.selection.active!;
@@ -180,16 +183,28 @@ export namespace vsed {
 		// });
 	}
 
+	/** Regex checks the currently active file.
+	 * 	Used to differentiate (.cpp/.h,.code-workspace) files etc.
+	 */
+	export function RegexTestActiveFile(ex: string | undefined): boolean {
+		let filename = vscode.window.activeTextEditor?.document.fileName;
+		if (filename !== undefined && ex !== undefined) {
+			if (RegExp(ex).test(filename!)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
 	/** Silently writes at line. Effectively adds lines ABOVE
 	 * the line without shifting user's cursor.
 	 * @param line Line number
 	 * @param lines array of strings
 	 * @param replaceLine whether to replace that line */
-	export function WriteAtLine_Silent(
-		line: number,
-		lines: string[],
-		replaceLine?: boolean
-	) {
+	export function WriteAtLine_Silent(line: number, lines: string[], replaceLine?: boolean) {
 		let prevpos = MoveCursorTo(line, PositionInLine.start);
 		let newline = prevpos.line;
 		let newchar = prevpos.character;
@@ -202,11 +217,6 @@ export namespace vsed {
 		WriteAtCursor(lines);
 		MoveCursorTo(newline, PositionInLine.neither, newchar); // back to original
 	}
-
-	/** Regex checks the currently active file.
-	 * 	Used to differentiate (.cpp/.h,.code-workspace) files etc.
-	 */
-	export function RegexTestActiveFile(ex: RegExp) {}
 
 	/** Writes lines at cursor position. Inserts newlines.
 	 * Also provides options to retain/yield previous cursor position

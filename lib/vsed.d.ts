@@ -44,15 +44,17 @@ export declare namespace vsed {
      * @returns number array with 2 values [start, end] or [-1,-1]
      */
     function MatchRegexInFile_Bounds(ex: RegExp): number[];
+    function DeleteLineAtCursor(): void;
     /** Silently writes at line. Effectively adds lines ABOVE
      * the line without shifting user's cursor.
      * @param line Line number
-     * @param lines array of strings */
-    function WriteAtLine_Silent(line: number, lines: string[]): void;
+     * @param lines array of strings
+     * @param replaceLine whether to replace that line */
+    function WriteAtLine_Silent(line: number, lines: string[], replaceLine?: boolean): void;
     /** Regex checks the currently active file.
      * 	Used to differentiate (.cpp/.h,.code-workspace) files etc.
      */
-    function RegexTestActiveFile(ex: RegExp): void;
+    function RegexTestActiveFile(ex: string | undefined): boolean;
     /** Writes lines at cursor position. Inserts newlines.
      * Also provides options to retain/yield previous cursor position
      * For a fully uninterrupted document update, use @see WriteSilentAt
@@ -60,6 +62,6 @@ export declare namespace vsed {
      * @param prevPos previous location of cursor (optional)
      * @param autoShift if true, will automatically shift cursor totransformed location.
      * @returns new transformed location, if prevPos was provided. */
-    function WriteAtCursor(lines: string[], prevPos?: vscode.Position, autoShift?: boolean): void;
+    function WriteAtCursor(lines: string[], autoShift?: boolean): void;
 }
 //# sourceMappingURL=vsed.d.ts.map

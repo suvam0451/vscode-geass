@@ -37,5 +37,12 @@ export declare namespace vsui {
     function InputBox(): Promise<string>;
     /** Request a single folder */
     function PickFolder(): Promise<string>;
+    /** Show quick pick and return selection.
+     * Use doCompare for yes/no prompts etc.
+     * @param arr array of options(strings)
+     * @param doCompare whether to do a string check on result
+     * @param compareTo string to match against(Makes regex internally)
+     */
+    function QuickPick(arr: string[], doCompare: boolean, compareTo?: string): Promise<string>;
 }
 //# sourceMappingURL=vsui.d.ts.map

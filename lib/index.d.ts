@@ -1,4 +1,6 @@
 import { vsed } from "./vsed";
 import { vsui } from "./vsui";
-export { vsui, vsed };
+import { vsfs } from "./vsfs";
+import { vscfg } from "./vscfg";
+export { vsui, vsed, vsfs, vscfg };
 //# sourceMappingURL=index.d.ts.map

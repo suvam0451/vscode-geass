@@ -38,7 +38,7 @@ export namespace vsui {
 				},
 				() => {
 					reject("SELECTION_EMPTY");
-				}
+				},
 			);
 		});
 	}
@@ -58,7 +58,7 @@ export namespace vsui {
 			},
 			() => {
 				return "";
-			}
+			},
 		);
 	}
 
@@ -89,7 +89,7 @@ export namespace vsui {
 				},
 				() => {
 					reject("USER_ABORT");
-				}
+				},
 			);
 		});
 	}
@@ -111,7 +111,7 @@ export namespace vsui {
 			},
 			() => {
 				return "";
-			}
+			},
 		);
 		return "";
 	}
@@ -126,7 +126,7 @@ export namespace vsui {
 				},
 				() => {
 					resolve("USER_ABORT");
-				}
+				},
 			);
 		});
 	}
@@ -144,10 +144,35 @@ export namespace vsui {
 				},
 				() => {
 					reject("SELECTION_EMPTY");
-				}
+				},
 			);
 		});
 	}
 
-	/** Show quick pick using fields gathered from a json array */
+	/** Show quick pick and return selection.
+	 * Use doCompare for yes/no prompts etc.
+	 * @param arr array of options(strings)
+	 * @param doCompare whether to do a string check on result
+	 * @param compareTo string to match against(Makes regex internally)
+	 */
+	export async function QuickPick(
+		arr: string[],
+		doCompare: boolean,
+		compareTo?: string,
+	): Promise<string> {
+		return new Promise<string>((resolve, reject) => {
+			vscode.window.showQuickPick(arr).then(
+				retval => {
+					if (doCompare) {
+						retval === compareTo && doCompare ? resolve(retval) : reject("MISMATCH");
+					} else {
+						resolve(retval);
+					}
+				},
+				() => {
+					reject("ABORT");
+				},
+			);
+		});
+	}
 }
