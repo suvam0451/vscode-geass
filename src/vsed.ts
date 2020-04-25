@@ -9,6 +9,7 @@ import vscode from "vscode";
  *		RegexTestActiveFile			---		Regex checks the currently active file.
  *		WriteAtLine_Silent			---		Silently writes at line. Effectively adds lines ABOVE
  *		WriteAtCursor				---		Writes lines at cursor position. Inserts newlines.
+ *		RegexReplaceEachLine		---		Matches all lines in file with regex and replaces for each match
  */
 
 /** namespace to work with the currently focused file. Checking if any file has focus is on you. */
