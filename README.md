@@ -67,3 +67,7 @@ Shorthands for most of the default library. A few quality-of-improvement in UX h
 | InputBoxAsync   | Shows input box to user and recieves SINGLE string input.                   |
 | QuickPickAsync  | Show quick pick and return selection. Use doCompare for yes/no prompts etc. |
 | Warning         | Simple info message. No callbacks.                                          |
+
+### Note to self
+
+To push an update to github

@@ -12,7 +12,7 @@
 			"**/.hg": true,
 			"**/CVS": true,
 			"**/.DS_Store": true,
-			".npmrc": true,
+			".npmrc": false,
 			".npmignore": true,
 			"**.md": false,
 			"yarn.lock": true,

@@ -10,10 +10,59 @@ import vscode from "vscode";
  *		WriteAtLine_Silent			---		Silently writes at line. Effectively adds lines ABOVE
  *		WriteAtCursor				---		Writes lines at cursor position. Inserts newlines.
  *		RegexReplaceEachLine		---		Matches all lines in file with regex and replaces for each match
+ *		SeekAboveThisLine			---		Returns matched line index, starting from and incuding current line, else -1
+ *		SeekBelowThisLine			---		Returns matched line index, starting from and incuding current line, else -1
+ *		GetCurrentLine				---		Gets the current line being highlighted
  */
 
 /** namespace to work with the currently focused file. Checking if any file has focus is on you. */
 export namespace vsed {
+	/** Gets the current line with curson. -1 in case of ANY error. */
+	export function GetCurrentLine(): number {
+		let _ed = vscode.window.activeTextEditor;
+		if (typeof _ed == "undefined") {
+			return -1;
+		}
+		return _ed.selection.active.line;
+	}
+
+	/** Returns matched line index, starting from and incuding current line, else -1 */
+	export function SeekAboveThisLine(from: number | vscode.Position, ex: RegExp): number {
+		let _ed = vscode.window.activeTextEditor;
+		let currentLine = -1;
+
+		if (typeof from == "number") {
+			// Line given.
+			currentLine = from;
+		} else if (typeof from == "undefined") {
+			// Undefined. Continue with current position
+			let _pos = _ed?.selection.active;
+			if (typeof _pos == "undefined") {
+				currentLine = -1;
+			} else {
+				currentLine = _pos?.line;
+			}
+		} else {
+			// Position given
+			currentLine = from.line;
+		}
+
+		if (currentLine == -1) {
+			return -1;
+		}
+		// Loop and search upwards
+		while (currentLine!--) {
+			let _str = _ed?.document.lineAt(currentLine!).text;
+			if (typeof _str == "undefined") {
+				return -1;
+			}
+			if (ex.test(_str!)) {
+				return currentLine;
+			}
+		}
+		return -1;
+	}
+
 	/** Insert a single string at given line(optionally specify tabstops)
 	 * @param line the line to be inserted
 	 * @param at The position at which the string has to be inserted. Default = 0;
@@ -26,7 +75,7 @@ export namespace vsed {
 		let editor = vscode.window.activeTextEditor;
 		let lineEnd = editor?.document.lineAt(at).range.end;
 		editor
-			?.edit(editBuilder => {
+			?.edit((editBuilder) => {
 				editBuilder.insert(lineEnd!, line + "\n");
 			})
 			.then(
@@ -35,7 +84,7 @@ export namespace vsed {
 						vscode.window.showInformationMessage("copied to clipboard.");
 					}
 				},
-				err => {
+				(err) => {
 					if (debug === true) {
 						vscode.window.showInformationMessage("failed to write to editor : ", err);
 					}
@@ -93,8 +142,8 @@ export namespace vsed {
 	function InternalWrite(lines: string[], at: vscode.Selection) {
 		let editor = vscode.window.activeTextEditor;
 		// const position = editor?.selection.active!;
-		editor?.edit(editBuilder => {
-			lines.forEach(line => {
+		editor?.edit((editBuilder) => {
+			lines.forEach((line) => {
 				editBuilder.insert(at.active, line + "\n");
 			});
 		});
@@ -224,8 +273,8 @@ export namespace vsed {
 	export function WriteAtCursor(lines: string[], autoShift?: boolean) {
 		let editor = vscode.window.activeTextEditor;
 		const position = editor?.selection.active!;
-		editor?.edit(editBuilder => {
-			lines.forEach(line => {
+		editor?.edit((editBuilder) => {
+			lines.forEach((line) => {
 				editBuilder.insert(position, line + "\n");
 			});
 		});
