@@ -19,7 +19,7 @@
 			"yarn-error.log": true,
 			"LICENSE": true,
 			"node_modules": true,
-			"lib": true
+			"lib": false
 		}
 	}
 }
