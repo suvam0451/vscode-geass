@@ -13,6 +13,7 @@ import vscode from "vscode";
  *		SeekAboveThisLine			---		Returns matched line index, starting from and incuding current line, else -1
  *		SeekBelowThisLine			---		Returns matched line index, starting from and incuding current line, else -1
  *		GetCurrentLine				---		Gets the current line being highlighted
+ *		GetCurrentText				---		Gets the text in the line with the cursor. Empty string in case of error
  */
 
 /** namespace to work with the currently focused file. Checking if any file has focus is on you. */
@@ -24,6 +25,17 @@ export namespace vsed {
 			return -1;
 		}
 		return _ed.selection.active.line;
+	}
+
+	/** Gets the current line with curson. -1 in case of ANY error. */
+	export function GetCurrentText(): string {
+		let _ed = vscode.window.activeTextEditor;
+		if (typeof _ed == "undefined") {
+			return "";
+		}
+		let _line = _ed.selection.active.line;
+		let _str = _ed?.document.lineAt(_line!).text;
+		return _str;
 	}
 
 	/** Returns matched line index, starting from and incuding current line, else -1 */
@@ -149,12 +161,12 @@ export namespace vsed {
 		});
 	}
 
-	/** Scans line from start to end for regex match
+	/** Scans lines from start to end of file (using a regular expression)
+	 * 	Returns the first match found, or -1
 	 * @param ex regex to use
-	 * @returns 0 based line number OR -1
-	 * @returns
+	 * @returns line which matches regex(0 based indexing) | -1
 	 */
-	export async function MatchRegexInFile(ex: RegExp): Promise<number> {
+	export async function MatchRegexInFileAsync(ex: RegExp): Promise<number> {
 		return new Promise<number>((resolve, reject) => {
 			let editor = vscode.window.activeTextEditor!;
 			if (editor === undefined) {
@@ -171,11 +183,12 @@ export namespace vsed {
 		});
 	}
 
-	/** Scans line from start to end for regex match
+	/** Scans lines from start to end of file (using a regular expression)
+	 * 	Returns the first match found, or -1
 	 * @param ex pattern to use
-	 * @returns 0 based line number OR -1
+	 * @returns line which matches regex(0 based indexing) | -1
 	 */
-	export function MatchRegexInFileSync(ex: RegExp): number {
+	export function MatchRegexInFile(ex: RegExp): number {
 		let editor = vscode.window.activeTextEditor!;
 		if (editor === undefined) {
 			return -1;
@@ -190,9 +203,13 @@ export namespace vsed {
 		return -1;
 	}
 
-	/** Scans active file with regex, returns first and last found indices
-	 * @param ex pattern to use
-	 * @returns number array with 2 values [start, end] or [-1,-1]
+	/** Scans the active file (using given regular expression)
+	 * 	returns the line with first occurance and last occurance.
+	 *
+	 * 	USECASE -- C++ #include block
+	 *
+	 * 	@param ex pattern to use
+	 * 	@returns [start, end] || [-1,-1]
 	 */
 	export function MatchRegexInFile_Bounds(ex: RegExp): number[] {
 		let editor = vscode.window.activeTextEditor!;
@@ -228,8 +245,9 @@ export namespace vsed {
 		// });
 	}
 
-	/** Regex checks the currently active file.
-	 * 	Used to differentiate (.cpp/.h,.code-workspace) files etc.
+	/** Check if the currently active file matches a regular expression.
+	 * 	USECASE -- file extensions.
+	 * 	@returns true || false
 	 */
 	export function RegexTestActiveFile(ex: string | undefined): boolean {
 		let filename = vscode.window.activeTextEditor?.document.fileName;
@@ -246,24 +264,34 @@ export namespace vsed {
 
 	/** Silently writes at line. Effectively adds lines ABOVE
 	 * the line without shifting user's cursor.
-	 * @param line Line number
-	 * @param lines array of strings
-	 * @param replaceLine whether to replace that line */
-	export function WriteAtLine_Silent(line: number, lines: string[], replaceLine?: boolean) {
-		let prevpos = MoveCursorTo(line, PositionInLine.start);
+	 *
+	 * **NOTE: The cursor is shifted back to original position after edit**
+	 * USECASE: Replacing comments with snippets in runtime, dynamic imports like golang.
+	 *
+	 * @param pos Line number(0 based) at which to write output in current line.
+	 * @param lines An array of strings.
+	 * @param replaceLine Whether the current line at destination should be replaced ? */
+	export function WriteAtLine_Silent(
+		pos: number,
+		lines: string[],
+		preserveTabs: boolean = true,
+		replaceLine: boolean = false,
+	) {
+		let prevpos = MoveCursorTo(pos, PositionInLine.start);
+		// let { line, character } = prevpos;
 		let newline = prevpos.line;
 		let newchar = prevpos.character;
-		if (line < prevpos.line) {
+		if (pos < prevpos.line) {
 			newline += lines.length; // If adding above current line, add number of lines.
 		}
-		if (replaceLine !== undefined && replaceLine === true) {
+		if (replaceLine) {
 			DeleteLineAtCursor();
 		}
 		WriteAtCursor(lines);
 		MoveCursorTo(newline, PositionInLine.neither, newchar); // back to original
 	}
 
-	/** Writes lines at cursor position. Inserts newlines.
+	/** Writes lines at the current cursor position. Inserts newlines at end of each line entry.
 	 * Also provides options to retain/yield previous cursor position
 	 * For a fully uninterrupted document update, use @see WriteSilentAt
 	 * @param lines an array of lines.

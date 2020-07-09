@@ -19,13 +19,6 @@ import vscode from "vscode";
 
 /** namespace for working with VSCode UI */
 export namespace vsui {
-	/** Simple info message. No callbacks.
-	 *	@param msg string message
-	 */
-	export function Error(msg: string) {
-		vscode.window.showErrorMessage(msg);
-	}
-
 	/** Request user for a folder (Sync)
 	 * 	@returns first folder selected if success
 	 * 	@returns empty string if failure
@@ -36,7 +29,7 @@ export namespace vsui {
 		opt.canSelectFolders = true;
 
 		vscode.window.showOpenDialog(opt).then(
-			success => {
+			(success) => {
 				return success![0].fsPath;
 			},
 			() => {
@@ -56,7 +49,7 @@ export namespace vsui {
 
 		return new Promise<string>((resolve, reject) => {
 			vscode.window.showOpenDialog(opt).then(
-				success => {
+				(success) => {
 					resolve(success![0].fsPath);
 				},
 				() => {
@@ -74,7 +67,7 @@ export namespace vsui {
 	export function GetString(match?: RegExp): string {
 		const input = vscode.window.showInputBox(); // request classname as string
 		input.then(
-			value => {
+			(value) => {
 				if (value !== undefined) {
 					if (match !== undefined) {
 						return match.test(value) ? value : "";
@@ -88,17 +81,16 @@ export namespace vsui {
 		return "";
 	}
 
-	/** Request user for string input (Async)
-	 * 	@param match also regex match (optional)
-	 * 	@returns input string if success
-	 * 	@returns reject("USER_ABORT") if failure(1)
-	 * 	@returns reject("NO_MATCH") if failure(2)
+	/** Request the user for a string input
+	 * 	@param match An optional regular expression to match against
+	 * 	@returns input || reject("USER_ABORT") -- If no regex was provided
+	 * 	@returns input || reject("USER_ABORT") || reject("NO_MATCH") -- otherwise
 	 */
 	export async function GetStringAsync(match?: RegExp): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
-			const input = vscode.window.showInputBox(); // request classname as string
+			const input = vscode.window.showInputBox();
 			input.then(
-				value => {
+				(value) => {
 					if (value !== undefined) {
 						if (match !== undefined) {
 							if (match.test(value)) {
@@ -120,19 +112,12 @@ export namespace vsui {
 		});
 	}
 
-	/** Simple info message. No callbacks.
-	 * 	@param msg string message
-	 */
-	export function Info(msg: string) {
-		vscode.window.showInformationMessage(msg);
-	}
-
 	/** Shows input box to user and recieves string input */
 	export async function InputBoxAsync(): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			const input = vscode.window.showInputBox(); // request classname as string
 			input.then(
-				value => {
+				(value) => {
 					typeof value !== "undefined" ? resolve(value) : reject("UNDEF");
 				},
 				() => {
@@ -142,11 +127,15 @@ export namespace vsui {
 		});
 	}
 
-	/** Show quick pick and return selection.
-	 * Use doCompare for yes/no prompts etc.
-	 * @param arr array of options(strings)
-	 * @param doCompare whether to do a string check on result
-	 * @param compareTo string to match against(Makes regex internally)
+	/** Show quick pick with given list of strings, and return selection.
+	 * 	Optionally, Use doCompare for yes/no prompts etc.
+	 *
+	 * 	USECASE -- Syntactic sugar. Also, YES/NO prompts and so on.
+	 *
+	 * 	@param arr array of options(strings)
+	 * 	@param doCompare whether to do a string check on result
+	 * 	@param compareTo string to match against(Makes regex internally)
+	 * 	@returns resolve(selection) || reject("ABORT") --> User probably exited prompt
 	 */
 	export async function QuickPickAsync(
 		arr: string[],
@@ -155,7 +144,7 @@ export namespace vsui {
 	): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			vscode.window.showQuickPick(arr).then(
-				retval => {
+				(retval) => {
 					if (doCompare) {
 						retval === compareTo && doCompare ? resolve(retval) : reject("MISMATCH");
 					} else {
@@ -169,10 +158,28 @@ export namespace vsui {
 		});
 	}
 
+	//#region Warning/Error/Info
+
 	/** Simple info message. No callbacks.
 	 * @param msg string message
 	 */
 	export function Warning(msg: string) {
 		vscode.window.showWarningMessage(msg);
 	}
+
+	/** Simple info message. No callbacks.
+	 *	@param msg string message
+	 */
+	export function Error(msg: string) {
+		vscode.window.showErrorMessage(msg);
+	}
+
+	/** Simple info message. No callbacks.
+	 * 	@param msg string message
+	 */
+	export function Info(msg: string) {
+		vscode.window.showInformationMessage(msg);
+	}
+
+	//#endregion
 }
